@@ -1,0 +1,81 @@
+(:1:)
+let $db_course_code := //courses/course[name = 'Database Systems']/code/text()
+for $student in //students/student
+where some $course in $student/enrollments/course satisfies $course/@code = $db_course_code
+return
+    <name>{ $student/name/text() }</name>
+
+(:2:)
+let $course_code := //courses/course[name = 'Discrete Structures']/code/text()
+let $student_count := count(
+  for $student in //students/student
+  where some $course in $student/enrollments/course satisfies $course/@code = $course_code
+  return $student
+)
+return <result>
+  <course>Discrete Structures</course>
+  <student_count>{ $student_count }</student_count>
+</result>
+
+(:3:)
+for $course in //courses/course[department = 'Mathematics']
+return
+    <name>{ $course/name/text() }</name>
+
+(:4:)
+let $student_name := 'Marijke Jooste'
+let $student_courses := //students/student[name = $student_name]/enrollments/course/@code
+for $course_code in $student_courses
+let $instructor := //courses/course[code = $course_code]/instructor/text()
+return
+  <instructor>
+    { $instructor }
+  </instructor>
+  
+(:5:)
+for $course in //courses/course[credits = 18]
+return
+    $course/code 
+
+(:6:)
+let $intro_course_code := //courses/course[name = 'Introduction to Computer Science']/code/text()
+let $math_course_code := //courses/course[name = 'Mathematics 124']/code/text()
+for $student in //students/student
+where some $intro_course in $student/enrollments/course satisfies $intro_course/@code = $intro_course_code
+let $is_enrolled_in_math := some $math_course in $student/enrollments/course satisfies $math_course/@code = $math_course_code
+where $is_enrolled_in_math
+return
+  <name>{ $student/name/text() }</name>
+
+(:7:)
+let $math_course_codes := //courses/course[department = 'Mathematics']/code/text()
+for $student in //students/student
+where not(some $course in $student/enrollments/course satisfies $course/@code = $math_course_codes)
+return
+  <name>{ $student/name/text() }</name>
+
+(:8:)
+for $course in //courses/course
+let $course_code := $course/code/text()
+let $student_count := count(//students/student/enrollments/course[@code = $course_code])
+where $student_count > 3
+return
+  <name>{ $course/name/text() }</name>
+
+(:9:)
+for $course in //courses/course
+let $course_code := $course/code/text()
+let $student_count := count(//students/student/enrollments/course[@code = $course_code])
+where $student_count > 2
+return
+  <instructor>
+    { $course/instructor/text() }
+  </instructor>
+
+(:10:)
+let $cs_first_year_courses := //courses/course[name = 'Introduction to Computer Science']/code/text()
+for $student in //students/student
+where some $course in $student/enrollments/course satisfies $course/@code = $cs_first_year_courses
+order by $student/name descending
+return
+  <name>{ $student/name/text() }</name>

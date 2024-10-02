@@ -1,0 +1,57 @@
+(:1:)
+//musician/name
+
+(:2:)
+//musician[name = "If These Trees Could Talk"]/albums/album
+(:2:)
+//musician[name = "Billy Talent"]/albums/album
+
+(:3:)
+//musician[albums/album = "Lateralus"]/name
+
+(:4:)
+//musician[contains(genre, "Pop")]/name
+
+(:5:)
+//musician[@type = "solo"]/name
+
+(:6:)
+//musician[@type = "solo"][2]/(name | genre)
+
+(:7:)
+//musician[name = "Ben Folds"]/albums/album[4]
+
+(:8:)
+//album[@year >= 2008]
+
+(:9:)
+for $musician in //musician
+let $albums := $musician/albums/album
+let $numAlbums := count($albums)
+let $firstYear := min($albums/@year)
+let $lastYear := max($albums/@year)
+let $rate := round-half-to-even(($lastYear - $firstYear + 1) div $numAlbums * 100) div 100
+order by $rate ascending
+return
+    <musician>
+        <name>{ $musician/name }</name>
+        <rate>{ $rate }</rate>
+    </musician>
+
+(:10:)
+(: Find the musician with the highest number of albums :)
+let $musicians := 
+    for $musician in //musician
+    let $numAlbums := count($musician/albums/album)
+    return
+        <musician>
+            <name>{ $musician/name }</name>
+            <numAlbums>{ $numAlbums }</numAlbums>
+        </musician>
+for $musician in $musicians
+order by $musician/numAlbums descending
+return
+    <musician>
+        <name>{ $musician/name }</name>
+        <numAlbums>{ $musician/numAlbums }</numAlbums>
+    </musician>
